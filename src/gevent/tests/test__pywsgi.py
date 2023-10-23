@@ -25,10 +25,21 @@ from gevent import monkey
 monkey.patch_all()
 
 from contextlib import contextmanager
-from urllib.parse import parse_qs
+try:
+    from urllib.parse import parse_qs
+except ImportError:
+    # Python 2
+    from urlparse import parse_qs
 import os
 import sys
-from io import BytesIO as StringIO
+try:
+    # On Python 2, we want the C-optimized version if
+    # available; it has different corner-case behaviour than
+    # the Python implementation, and it used by socket.makefile
+    # by default.
+    from cStringIO import StringIO
+except ImportError:
+    from io import BytesIO as StringIO
 
 import weakref
 import unittest
@@ -713,7 +724,7 @@ class TestChunkedPost(TestCase):
     calls = 0
 
     def setUp(self):
-        super().setUp()
+        super(TestChunkedPost, self).setUp()
         self.calls = 0
 
     def application(self, env, start_response):

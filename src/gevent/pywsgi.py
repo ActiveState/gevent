@@ -41,7 +41,10 @@ import time
 import traceback
 from datetime import datetime
 
-from urllib.parse import unquote
+try:
+    from urllib import unquote
+except ImportError:
+    from urllib.parse import unquote # python 2 pylint:disable=import-error,no-name-in-module
 
 from gevent import socket
 import gevent
